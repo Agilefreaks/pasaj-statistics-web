@@ -10,12 +10,9 @@ class PasajStatistics extends StatelessWidget {
     return MaterialApp(
       title: 'Statistica lunara',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
-      home: Scaffold(
-        appBar: AppBar(title: Text("Statistica lunara")),
-        body: MonthlyStatisticsPage(),
-      ),
+      home: MonthlyStatisticsPage(),
       localizationsDelegates: [
         // ... app-specific localization delegate[s] here
         GlobalMaterialLocalizations.delegate,

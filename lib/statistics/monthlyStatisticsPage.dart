@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:intl/intl.dart';
 
 class MonthlyStatisticsPage extends StatefulWidget {
   @override
@@ -7,28 +9,36 @@ class MonthlyStatisticsPage extends StatefulWidget {
 }
 
 class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
-  String dropdownValue = 'One';
+  DateTime currentDate = new DateTime.now();
+  DateTime selectedDateTime;
+
+  final dateFormat = DateFormat.MMMM('ro');
+
+  @override
+  void initState() {
+    Intl.defaultLocale = 'ro';
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Column(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        DropdownButton<String>(
-          value: dropdownValue,
-          elevation: 16,
-          onChanged: (String newValue) {
-            setState(() {
-              dropdownValue = newValue;
+        RaisedButton(
+          child: Text(dateFormat.format(currentDate).toString().toUpperCase()),
+          onPressed: () async {
+            showMonthPicker(context: context, initialDate: currentDate)
+                .then((date) {
+              if (date != null) {
+                setState(() {
+                  currentDate = date;
+                });
+              }
             });
           },
-          items: <String>['One', 'Two', 'Free', 'Four']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
         )
       ],
     ));

@@ -14,7 +14,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   DateTime selectedDate = new DateTime.now();
   DateTime selectedDateTime;
 
-  final dateFormat = DateFormat.MMMM('ro');
+  final monthFormat = DateFormat.yMMMM('ro');
 
   List<DailyOrders> monthlyOrder = [];
   MonthlyStatisticsApiProvider monthlyStatisticsApiProvider =
@@ -43,10 +43,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
         title: Text("Statistica lunara"),
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 200.0),
+            padding: const EdgeInsets.only(right: 100.0),
             child: RaisedButton(
               child: Text(
-                dateFormat.format(selectedDate).toString().toUpperCase(),
+                monthFormat.format(selectedDate).toString().toUpperCase(),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -76,8 +76,8 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    "Contabilitatea pe luna ${dateFormat.format(selectedDate).toString().toUpperCase()}",
-                    style: TextStyle(fontSize: 30),
+                    "Contabilitatea ${monthFormat.format(selectedDate).toString().toUpperCase()}",
+                    style: TextStyle(fontSize: 35),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.fade,
                   ),
@@ -93,7 +93,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) =>
-                            EntryItem(monthlyOrder[index]),
+                            DailyStatisticsWidget(monthlyOrder[index]),
                         itemCount: monthlyOrder.length,
                       ),
                     ),
@@ -108,18 +108,44 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   }
 }
 
-class EntryItem extends StatelessWidget {
+class DailyStatisticsWidget extends StatelessWidget {
   final DailyOrders dayItem;
+  final dayFormat = DateFormat.MMMMd('ro');
 
-  EntryItem(this.dayItem);
+  DailyStatisticsWidget(this.dayItem);
 
-  Widget _buildTiles(DailyOrders root) {
+  Widget _buildTiles(DailyOrders dailyOrders) {
     return ExpansionTile(
-      key: PageStorageKey<DailyOrders>(root),
-      title: Text(root.date.toString()),
-      children: root.items
+      key: PageStorageKey<DailyOrders>(dailyOrders),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
+              child: Text(
+            dayFormat.format(dailyOrders.date),
+            style: TextStyle(fontSize: 25),
+          )),
+          Expanded(
+            child: Text("Total de plata: ${dailyOrders.totalAmount} LEI",
+                style: TextStyle(fontSize: 25), textAlign: TextAlign.end),
+          ),
+        ],
+      ),
+      children: dailyOrders.items
           .map((dayItem) => ListTile(
-                title: Text(dayItem.name),
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                        child: Text(dayItem.name, textAlign: TextAlign.start, style: TextStyle(fontSize: 18),),),
+                    Expanded(
+                        child: Text("Cantitate: ${dayItem.quantity}",
+                            textAlign: TextAlign.center, style: TextStyle(fontSize: 18),), ),
+                    Expanded(
+                        child: Text("Total: ${dayItem.amount} LEI",
+                            textAlign: TextAlign.end, style: TextStyle(fontSize: 18),), ),
+                  ],
+                ),
               ))
           .toList(),
     );
@@ -129,20 +155,4 @@ class EntryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return _buildTiles(dayItem);
   }
-}
-
-class Day {
-  String date;
-  String totalAmount;
-  List<DayItem> items;
-
-  Day(this.date, this.totalAmount, this.items);
-}
-
-class DayItem {
-  String name;
-  String quantity;
-  String amount;
-
-  DayItem(this.name, this.quantity, this.amount);
 }

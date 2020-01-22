@@ -1,21 +1,16 @@
-import 'dart:convert';
-
-import 'package:http/http.dart';
-import 'package:pasaj_statistics/models/monthlyOrder.dart';
+import 'package:http/http.dart' as http;
+import 'package:pasaj_statistics/models/dailyOrders.dart';
 
 class MonthlyStatisticsApiProvider {
-  Client client = new Client();
 
   String url =
       "https://dev-deliverypasaj.herokuapp.com/api/orders/monthlyCount?month=";
 
-  Future<MonthlyOrder> fetchMonthlyOrder({DateTime currentDate}) async {
-    currentDate = DateTime.now();
-
-    final response = await client.get("$url$currentDate");
+  Future<List<DailyOrders>> fetchMonthlyOrder(DateTime currentDate) async {
+    final response = await http.get("$url$currentDate");
 
     if (response.statusCode == 200) {
-      return MonthlyOrder.fromJson(json.decode(response.body));
+      return monthlyOrderFromJson(response.body);
     } else {
       //handle error
       throw Exception('Failed to load post');

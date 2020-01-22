@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
+import 'package:pasaj_statistics/models/dailyOrders.dart';
+import 'package:pasaj_statistics/statistics/monthlyStatisticsApiProvider.dart';
 
 class MonthlyStatisticsPage extends StatefulWidget {
   @override
@@ -13,6 +15,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   DateTime selectedDateTime;
 
   final dateFormat = DateFormat.MMMM('ro');
+
+  List<DailyOrders> monthlyOrder = [];
+  MonthlyStatisticsApiProvider monthlyStatisticsApiProvider =
+      new MonthlyStatisticsApiProvider();
 
   @override
   void initState() {
@@ -44,6 +50,11 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                   if (date != null) {
                     setState(() {
                       currentDate = date;
+                      monthlyStatisticsApiProvider
+                          .fetchMonthlyOrder(currentDate)
+                          .then((result) {
+                        monthlyOrder = result;
+                      });
                     });
                   }
                 });
@@ -61,7 +72,11 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                 Expanded(
                   child: Padding(
                     padding: EdgeInsets.all(50.0),
-                    child: Text("Contabilitatea pe luna ${dateFormat.format(currentDate).toString().toUpperCase()}", style: TextStyle(fontSize: 30), overflow: TextOverflow.fade,),
+                    child: Text(
+                      "Contabilitatea pe luna ${dateFormat.format(currentDate).toString().toUpperCase()}",
+                      style: TextStyle(fontSize: 30),
+                      overflow: TextOverflow.fade,
+                    ),
                   ),
                 )
               ],
@@ -75,8 +90,8 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) =>
-                            EntryItem(dummyArray[index]),
-                        itemCount: dummyArray.length,
+                            EntryItem(monthlyOrder[index]),
+                        itemCount: monthlyOrder.length,
                       ),
                     ),
                   ),
@@ -88,23 +103,17 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
       ),
     );
   }
-
-  final dummyArray = [
-    Day("azi", "20 lei", [DayItem("Felul 1", "10", "15")]),
-    Day("azi", "20 lei", [DayItem("Felul 1", "10", "15")]),
-    Day("azi", "20 lei", [DayItem("Felul 1", "10", "15")])
-  ];
 }
 
 class EntryItem extends StatelessWidget {
-  final Day dayItem;
+  final DailyOrders dayItem;
 
   EntryItem(this.dayItem);
 
-  Widget _buildTiles(Day root) {
+  Widget _buildTiles(DailyOrders root) {
     return ExpansionTile(
-      key: PageStorageKey<Day>(root),
-      title: Text(root.date),
+      key: PageStorageKey<DailyOrders>(root),
+      title: Text(root.date.toString()),
       children: root.items
           .map((dayItem) => ListTile(
                 title: Text(dayItem.name),

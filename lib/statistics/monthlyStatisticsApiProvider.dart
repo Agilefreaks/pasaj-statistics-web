@@ -10,7 +10,7 @@ class MonthlyStatisticsApiProvider {
     final response = await http.get("$url$currentDate");
 
     if (response.statusCode == 200) {
-      return monthlyOrderFromJson(response.body);
+      return dailyOrdersFromJson(response.body);
     } else {
       //handle error
       throw Exception('Failed to load post');

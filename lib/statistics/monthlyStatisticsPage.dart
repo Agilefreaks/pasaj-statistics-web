@@ -48,12 +48,12 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                 showMonthPicker(context: context, initialDate: currentDate)
                     .then((date) {
                   if (date != null) {
-                    setState(() {
-                      currentDate = date;
                       monthlyStatisticsApiProvider
                           .fetchMonthlyOrder(currentDate)
                           .then((result) {
-                        monthlyOrder = result;
+                        setState(()  {
+                          currentDate = date;
+                          monthlyOrder = result;
                       });
                     });
                   }

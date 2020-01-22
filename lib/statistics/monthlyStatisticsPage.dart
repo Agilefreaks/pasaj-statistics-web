@@ -86,7 +86,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    "Contabilitatea ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
+                    "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
                     style: TextStyle(fontSize: 35),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.fade,

@@ -13,6 +13,7 @@ class PasajStatistics extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: MonthlyStatisticsPage(),
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: [
         // ... app-specific localization delegate[s] here
         GlobalMaterialLocalizations.delegate,

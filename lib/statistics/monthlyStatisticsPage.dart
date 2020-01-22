@@ -14,7 +14,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   DateTime selectedDate = new DateTime.now();
   DateTime selectedDateTime;
 
-  final monthFormat = DateFormat.yMMMM('ro');
+  final monthAndYearFormat = DateFormat.yMMMM('ro');
+  final monthFormat = DateFormat.MMMM('ro');
+
+  double totalMonthlyAmount=0;
 
   List<DailyOrders> monthlyOrder = [];
   MonthlyStatisticsApiProvider monthlyStatisticsApiProvider =
@@ -32,6 +35,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
     monthlyStatisticsApiProvider.fetchMonthlyOrder(date).then((result) {
       setState(() {
         monthlyOrder = result;
+        totalMonthlyAmount = 0;
+        monthlyOrder.forEach((dayOrder) {
+          totalMonthlyAmount += dayOrder.totalAmount;
+        });
       });
     });
   }
@@ -46,7 +53,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
             padding: const EdgeInsets.only(right: 100.0),
             child: RaisedButton(
               child: Text(
-                monthFormat.format(selectedDate).toString().toUpperCase(),
+                monthAndYearFormat
+                    .format(selectedDate)
+                    .toString()
+                    .toUpperCase(),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -76,7 +86,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    "Contabilitatea ${monthFormat.format(selectedDate).toString().toUpperCase()}",
+                    "Contabilitatea ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
                     style: TextStyle(fontSize: 35),
                     textAlign: TextAlign.center,
                     overflow: TextOverflow.fade,
@@ -98,6 +108,21 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       ),
                     ),
                   ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 105.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
+                      style: TextStyle(fontSize: 25),
+                      textAlign: TextAlign.end,
+                      overflow: TextOverflow.fade,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -137,13 +162,26 @@ class DailyStatisticsWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Expanded(
-                        child: Text(dayItem.name, textAlign: TextAlign.start, style: TextStyle(fontSize: 18),),),
+                      child: Text(
+                        dayItem.name,
+                        textAlign: TextAlign.start,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
                     Expanded(
-                        child: Text("Cantitate: ${dayItem.quantity}",
-                            textAlign: TextAlign.center, style: TextStyle(fontSize: 18),), ),
+                      child: Text(
+                        "Cantitate: ${dayItem.quantity}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
                     Expanded(
-                        child: Text("Total: ${dayItem.amount} LEI",
-                            textAlign: TextAlign.end, style: TextStyle(fontSize: 18),), ),
+                      child: Text(
+                        "Total: ${dayItem.amount} LEI",
+                        textAlign: TextAlign.end,
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
                   ],
                 ),
               ))

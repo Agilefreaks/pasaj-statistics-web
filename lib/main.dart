@@ -19,8 +19,8 @@ class PasajStatistics extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('en'), // English
-        const Locale('ro'), // Hebrew
+        const Locale('en'),
+        const Locale('ro'),
       ],
     );
   }

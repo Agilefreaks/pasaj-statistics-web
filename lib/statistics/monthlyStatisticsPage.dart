@@ -11,7 +11,7 @@ class MonthlyStatisticsPage extends StatefulWidget {
 }
 
 class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
-  DateTime currentDate = new DateTime.now();
+  DateTime selectedDate = new DateTime.now();
   DateTime selectedDateTime;
 
   final dateFormat = DateFormat.MMMM('ro');
@@ -24,7 +24,16 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   void initState() {
     Intl.defaultLocale = 'ro';
 
+    fetchMonthlyOrder(selectedDate);
     super.initState();
+  }
+
+  fetchMonthlyOrder(DateTime date) {
+    monthlyStatisticsApiProvider.fetchMonthlyOrder(date).then((result) {
+      setState(() {
+        monthlyOrder = result;
+      });
+    });
   }
 
   @override
@@ -37,7 +46,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
             padding: const EdgeInsets.only(right: 200.0),
             child: RaisedButton(
               child: Text(
-                dateFormat.format(currentDate).toString().toUpperCase(),
+                dateFormat.format(selectedDate).toString().toUpperCase(),
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -45,16 +54,12 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
               ),
               color: Colors.green,
               onPressed: () async {
-                showMonthPicker(context: context, initialDate: currentDate)
+                showMonthPicker(context: context, initialDate: selectedDate)
                     .then((date) {
                   if (date != null) {
-                      monthlyStatisticsApiProvider
-                          .fetchMonthlyOrder(currentDate)
-                          .then((result) {
-                        setState(()  {
-                          currentDate = date;
-                          monthlyOrder = result;
-                      });
+                    fetchMonthlyOrder(selectedDate);
+                    setState(() {
+                      selectedDate = date;
                     });
                   }
                 });
@@ -64,25 +69,23 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
         ],
       ),
       body: Container(
+        padding: EdgeInsets.all(50.0),
         child: Column(
           children: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.all(50.0),
-                    child: Text(
-                      "Contabilitatea pe luna ${dateFormat.format(currentDate).toString().toUpperCase()}",
-                      style: TextStyle(fontSize: 30),
-                      overflow: TextOverflow.fade,
-                    ),
+                  child: Text(
+                    "Contabilitatea pe luna ${dateFormat.format(selectedDate).toString().toUpperCase()}",
+                    style: TextStyle(fontSize: 30),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.fade,
                   ),
                 )
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(100.0),
+              padding: const EdgeInsets.all(50.0),
               child: Row(
                 children: <Widget>[
                   Expanded(

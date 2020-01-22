@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pasaj_statistics/models/dailyOrders.dart';
 import 'package:intl/intl.dart';
+import 'package:pasaj_statistics/utils/sizeConfig.dart';
 
 class DailyStatisticsWidget extends StatelessWidget {
   final DailyOrders dayItem;
@@ -17,11 +18,11 @@ class DailyStatisticsWidget extends StatelessWidget {
           Expanded(
               child: Text(
             dayFormat.format(dailyOrders.date),
-            style: TextStyle(fontSize: 25),
+            style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.8),
           )),
           Expanded(
             child: Text("Total de plata: ${dailyOrders.totalAmount} LEI",
-                style: TextStyle(fontSize: 25), textAlign: TextAlign.end),
+                style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.8), textAlign: TextAlign.end),
           ),
         ],
       ),
@@ -34,21 +35,21 @@ class DailyStatisticsWidget extends StatelessWidget {
                       child: Text(
                         dayItem.name,
                         textAlign: TextAlign.start,
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.4),
                       ),
                     ),
                     Expanded(
                       child: Text(
                         "Cantitate: ${dayItem.quantity}",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.4),
                       ),
                     ),
                     Expanded(
                       child: Text(
                         "Total: ${dayItem.amount} LEI",
                         textAlign: TextAlign.end,
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.4),
                       ),
                     ),
                   ],

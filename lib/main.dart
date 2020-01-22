@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pasaj_statistics/statistics/monthlyStatisticsPage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pasaj_statistics/utils/sizeConfig.dart';
 
 void main() => runApp(PasajStatistics());
 
 class PasajStatistics extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return MaterialApp(
       title: 'Statistica lunara',
       theme: ThemeData(

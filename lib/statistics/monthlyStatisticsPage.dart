@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pasaj_statistics/models/dailyOrders.dart';
 import 'package:pasaj_statistics/statistics/dailyStatisticsWidget.dart';
 import 'package:pasaj_statistics/statistics/monthlyStatisticsApiProvider.dart';
+import 'package:pasaj_statistics/utils/sizeConfig.dart';
 
 class MonthlyStatisticsPage extends StatefulWidget {
   @override
@@ -46,6 +47,8 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Statistica lunara"),
@@ -79,55 +82,57 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
           )
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.all(50.0),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
-                    style: TextStyle(fontSize: 35),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.fade,
-                  ),
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(50.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Center(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) =>
-                            DailyStatisticsWidget(monthlyOrder[index]),
-                        itemCount: monthlyOrder.length,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 105.0),
-              child: Row(
+      body:SingleChildScrollView(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 3, vertical: SizeConfig.blockSizeVertical* 3),
+          child: Column(
+            children: <Widget>[
+              Row(
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
-                      style: TextStyle(fontSize: 25),
-                      textAlign: TextAlign.end,
+                      "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
+                      style: TextStyle(fontSize: SizeConfig.blockSizeVertical *3),
+                      textAlign: TextAlign.center,
                       overflow: TextOverflow.fade,
                     ),
                   )
                 ],
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical* 3, horizontal: 20),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Center(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) =>
+                              DailyStatisticsWidget(monthlyOrder[index]),
+                          itemCount: monthlyOrder.length,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 105.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
+                        style: TextStyle(fontSize: 25),
+                        textAlign: TextAlign.end,
+                        overflow: TextOverflow.fade,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

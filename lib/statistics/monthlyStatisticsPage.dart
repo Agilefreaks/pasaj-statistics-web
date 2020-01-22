@@ -19,6 +19,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   final monthAndYearFormat = DateFormat.yMMMM('ro');
   final monthFormat = DateFormat.MMMM('ro');
 
+  bool showLoading = true;
   double totalMonthlyAmount = 0;
 
   List<DailyOrders> monthlyOrder = [];
@@ -34,6 +35,9 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   }
 
   fetchMonthlyOrder(DateTime date) {
+    setState(() {
+      showLoading = true;
+    });
     monthlyStatisticsApiProvider.fetchMonthlyOrder(date).then((result) {
       setState(() {
         monthlyOrder = result;
@@ -41,6 +45,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
         monthlyOrder.forEach((dayOrder) {
           totalMonthlyAmount += dayOrder.totalAmount;
         });
+        showLoading = false;
       });
     });
   }
@@ -54,7 +59,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
         title: Text("Statistica lunara"),
         actions: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(right: 100.0),
+            padding: EdgeInsets.only(right: SizeConfig.blockSizeVertical * 6),
             child: RaisedButton(
               child: Text(
                 monthAndYearFormat
@@ -82,52 +87,73 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
           )
         ],
       ),
-      body:SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: SizeConfig.blockSizeHorizontal * 3, vertical: SizeConfig.blockSizeVertical* 3),
+          padding: EdgeInsets.symmetric(
+              horizontal: SizeConfig.blockSizeHorizontal * 3,
+              vertical: SizeConfig.blockSizeVertical * 3),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
-                      style: TextStyle(fontSize: SizeConfig.blockSizeVertical *3),
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.fade,
-                    ),
-                  )
-                ],
+              Visibility(
+                visible: showLoading,
+                child: Center(child: CircularProgressIndicator()),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: SizeConfig.blockSizeVertical* 3, horizontal: 20),
-                child: Row(
+              Visibility(
+                visible: !showLoading,
+                child: Column(
                   children: <Widget>[
-                    Expanded(
-                      child: Center(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) =>
-                              DailyStatisticsWidget(monthlyOrder[index]),
-                          itemCount: monthlyOrder.length,
-                        ),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
+                            style: TextStyle(
+                                fontSize: SizeConfig.blockSizeVertical * 3),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.fade,
+                          ),
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: SizeConfig.blockSizeVertical * 3,
+                          horizontal: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Center(
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                itemBuilder: (BuildContext context,
+                                        int index) =>
+                                    DailyStatisticsWidget(monthlyOrder[index]),
+                                itemCount: monthlyOrder.length,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 105.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
-                        style: TextStyle(fontSize: 25),
-                        textAlign: TextAlign.end,
-                        overflow: TextOverflow.fade,
+                    Padding(
+                      padding: EdgeInsets.only(
+                          right: SizeConfig.blockSizeVertical * 3),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
+                              style: TextStyle(
+                                  fontSize: SizeConfig.blockSizeVertical * 3),
+                              textAlign: TextAlign.end,
+                              overflow: TextOverflow.fade,
+                            ),
+                          )
+                        ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

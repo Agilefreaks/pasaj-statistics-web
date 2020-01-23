@@ -108,12 +108,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
-                            style: TextStyle(
-                                fontSize: SizeConfig.blockSizeVertical * 3),
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.fade,
-                          ),
+                              "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
+                              style: TextStyle(
+                                  fontSize: SizeConfig.blockSizeVertical * 3),
+                              textAlign: TextAlign.center),
                         )
                       ],
                     ),
@@ -144,12 +142,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                              "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
-                              style: TextStyle(
-                                  fontSize: SizeConfig.blockSizeVertical * 3),
-                              textAlign: TextAlign.end,
-                              overflow: TextOverflow.fade,
-                            ),
+                                "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
+                                style: TextStyle(
+                                    fontSize: SizeConfig.blockSizeVertical * 3),
+                                textAlign: TextAlign.end),
                           )
                         ],
                       ),

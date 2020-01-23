@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:pasaj_statistics/models/dailyOrders.dart';
+import 'package:pasaj_statistics/models/user.dart';
 import 'package:pasaj_statistics/statistics/dailyStatisticsWidget.dart';
 import 'package:pasaj_statistics/statistics/monthlyStatisticsApiProvider.dart';
+import 'package:pasaj_statistics/statistics/monthlyStatisticsRepository.dart';
+import 'package:pasaj_statistics/statistics/usersRepository.dart';
 import 'package:pasaj_statistics/utils/sizeConfig.dart';
 
 class MonthlyStatisticsPage extends StatefulWidget {
@@ -13,6 +16,10 @@ class MonthlyStatisticsPage extends StatefulWidget {
 }
 
 class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
+  MonthlyStatisticsRepository monthlyStatisticsRepository =
+      new MonthlyStatisticsRepository();
+  UsersRepository usersRepository = new UsersRepository();
+
   DateTime selectedDate = new DateTime.now();
   DateTime selectedDateTime;
 
@@ -23,22 +30,40 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   double totalMonthlyAmount = 0;
 
   List<DailyOrders> monthlyOrder = [];
-  MonthlyStatisticsApiProvider monthlyStatisticsApiProvider =
-      new MonthlyStatisticsApiProvider();
+  final agileFreaksUser = User(id: -1, firstName: "Agile", lastName: "Freaks");
+  User selectedUser;
+  List<User> users = [];
 
   @override
   void initState() {
     Intl.defaultLocale = 'ro';
 
-    fetchMonthlyOrder(selectedDate);
+    selectedUser = agileFreaksUser;
+    fetchMonthlyOrder(selectedDate, selectedUser.id);
+    fetchUsers();
     super.initState();
   }
 
-  fetchMonthlyOrder(DateTime date) {
+  fetchUsers() {
     setState(() {
       showLoading = true;
     });
-    monthlyStatisticsApiProvider.fetchMonthlyOrder(date).then((result) {
+    usersRepository.fetchAllUsers().then((result) {
+      setState(() {
+        users = [agileFreaksUser];
+        users.addAll(result);
+        showLoading = false;
+      });
+    });
+  }
+
+  fetchMonthlyOrder(DateTime date, int userId) {
+    setState(() {
+      showLoading = true;
+    });
+    monthlyStatisticsRepository
+        .fetchAllOrdersPerMonth(date, userId)
+        .then((result) {
       setState(() {
         monthlyOrder = result;
         totalMonthlyAmount = 0;
@@ -60,29 +85,67 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(right: SizeConfig.blockSizeVertical * 6),
-            child: RaisedButton(
-              child: Text(
-                monthAndYearFormat
-                    .format(selectedDate)
-                    .toString()
-                    .toUpperCase(),
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0),
-              ),
-              color: Colors.green,
-              onPressed: () async {
-                showMonthPicker(context: context, initialDate: selectedDate)
-                    .then((date) {
-                  if (date != null) {
-                    fetchMonthlyOrder(selectedDate);
-                    setState(() {
-                      selectedDate = date;
+            child: Row(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(right: 20.0),
+                  child: Theme(
+                    data: ThemeData(canvasColor: Colors.green),
+                    child: DropdownButton<User>(
+                      underline: Container(
+                        height: 0,
+                      ),
+                      value: selectedUser,
+                      onChanged: (User user) {
+                        setState(() {
+                          selectedUser = user;
+                          fetchMonthlyOrder(selectedDate, selectedUser.id);
+                        });
+                      },
+                      items: users.map<DropdownMenuItem<User>>((User user) {
+                        return DropdownMenuItem<User>(
+                          value: user,
+                          child: Text(
+                            "${user.firstName} ${user.lastName}",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20.0),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                RaisedButton(
+                  child: Text(
+                    monthAndYearFormat
+                        .format(selectedDate)
+                        .toString()
+                        .toUpperCase(),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0),
+                  ),
+                  color: Colors.green,
+                  onPressed: () async {
+                    showMonthPicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime(2018),
+                            lastDate: DateTime(2030))
+                        .then((date) {
+                      if (date != null) {
+                        fetchMonthlyOrder(date, selectedUser.id);
+                        setState(() {
+                          selectedDate = date;
+                        });
+                      }
                     });
-                  }
-                });
-              },
+                  },
+                ),
+              ],
             ),
           )
         ],
@@ -108,7 +171,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                              "Contabilitate ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
+                              "Contabilitate ${selectedUser.firstName} ${selectedUser.lastName} ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
                               style: TextStyle(
                                   fontSize: SizeConfig.blockSizeVertical * 3),
                               textAlign: TextAlign.center),

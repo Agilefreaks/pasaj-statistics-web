@@ -20,11 +20,10 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
       new MonthlyStatisticsRepository();
   UsersRepository usersRepository = new UsersRepository();
 
-  DateTime selectedDate = new DateTime.now();
-  DateTime selectedDateTime;
+  DateTime selectedEndDate = new DateTime.now();
+  DateTime selectedStartDate = new DateTime.now();
 
-  final monthAndYearFormat = DateFormat.yMMMM('ro');
-  final monthFormat = DateFormat.MMMM('ro');
+  final dayAndMonthFormat = DateFormat.MMMMd('ro');
 
   bool showLoading = true;
   double totalMonthlyAmount = 0;
@@ -39,7 +38,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
     Intl.defaultLocale = 'ro';
 
     selectedUser = agileFreaksUser;
-    fetchMonthlyOrder(selectedDate, selectedUser.id);
+    fetchMonthlyOrder(selectedStartDate, selectedEndDate, selectedUser.id);
     fetchUsers();
     super.initState();
   }
@@ -57,12 +56,12 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
     });
   }
 
-  fetchMonthlyOrder(DateTime date, int userId) {
+  fetchMonthlyOrder(DateTime startDate, DateTime endDate, int userId) {
     setState(() {
       showLoading = true;
     });
     monthlyStatisticsRepository
-        .fetchAllOrdersPerMonth(date, userId)
+        .fetchAllOrdersPerMonth(startDate, userId)
         .then((result) {
       setState(() {
         monthlyOrder = result;
@@ -81,12 +80,19 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Statistica lunara"),
+        title: Text(
+          "Statistica lunara",
+          style: TextStyle(fontSize: 20),
+        ),
         actions: <Widget>[
           Padding(
-            padding: EdgeInsets.only(right: SizeConfig.blockSizeVertical * 6),
+            padding: EdgeInsets.only(right: SizeConfig.blockSizeHorizontal * 6),
             child: Row(
               children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Text("Pentru", style: TextStyle(fontSize: 20),),
+                ),
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0),
                   child: Theme(
@@ -99,7 +105,8 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       onChanged: (User user) {
                         setState(() {
                           selectedUser = user;
-                          fetchMonthlyOrder(selectedDate, selectedUser.id);
+                          fetchMonthlyOrder(selectedStartDate, selectedEndDate,
+                              selectedUser.id);
                         });
                       },
                       items: users.map<DropdownMenuItem<User>>((User user) {
@@ -110,36 +117,74 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 20.0),
+                                fontSize: 20),
                           ),
                         );
                       }).toList(),
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text("din", style: TextStyle(fontSize: 20),),
+                ),
                 RaisedButton(
                   child: Text(
-                    monthAndYearFormat
-                        .format(selectedDate)
+                    dayAndMonthFormat
+                        .format(selectedStartDate)
                         .toString()
                         .toUpperCase(),
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 20.0),
+                        fontSize: 20),
                   ),
                   color: Colors.green,
                   onPressed: () async {
-                    showMonthPicker(
+                    showDatePicker(
                             context: context,
-                            initialDate: selectedDate,
-                            firstDate: DateTime(2018),
+                            initialDate: selectedStartDate,
+                            firstDate: DateTime(2019),
                             lastDate: DateTime(2030))
                         .then((date) {
                       if (date != null) {
-                        fetchMonthlyOrder(date, selectedUser.id);
+                        fetchMonthlyOrder(selectedStartDate, selectedEndDate,
+                            selectedUser.id);
                         setState(() {
-                          selectedDate = date;
+                          selectedStartDate = date;
+                        });
+                      }
+                    });
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Text("pana in", style: TextStyle(fontSize: 20),),
+                ),
+                RaisedButton(
+                  child: Text(
+                    dayAndMonthFormat
+                        .format(selectedEndDate)
+                        .toString()
+                        .toUpperCase(),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20),
+                  ),
+                  color: Colors.green,
+                  onPressed: () async {
+                    showDatePicker(
+                            context: context,
+                            initialDate: selectedEndDate,
+                            firstDate: DateTime(2019),
+                            lastDate: DateTime(2030))
+                        .then((date) {
+                      if (date != null) {
+                        fetchMonthlyOrder(selectedStartDate, selectedEndDate,
+                            selectedUser.id);
+                        setState(() {
+                          selectedEndDate = date;
                         });
                       }
                     });
@@ -171,7 +216,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                              "Contabilitate ${selectedUser.firstName} ${selectedUser.lastName} ${monthAndYearFormat.format(selectedDate).toString().toUpperCase()}",
+                              "Contabilitate ${selectedUser.firstName} ${selectedUser.lastName}",
                               style: TextStyle(
                                   fontSize: SizeConfig.blockSizeVertical * 3),
                               textAlign: TextAlign.center),
@@ -205,7 +250,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                         children: <Widget>[
                           Expanded(
                             child: Text(
-                                "Total de plata ${monthFormat.format(selectedDate).toString().toUpperCase()}: $totalMonthlyAmount LEI",
+                                "Total de plata: $totalMonthlyAmount LEI",
                                 style: TextStyle(
                                     fontSize: SizeConfig.blockSizeVertical * 3),
                                 textAlign: TextAlign.end),

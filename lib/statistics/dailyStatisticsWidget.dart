@@ -19,7 +19,7 @@ class DailyStatisticsWidget extends StatelessWidget {
               child: Text(
             dayFormat.format(dailyOrders.date),
             style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.8),
-          )),
+          ),),
           Expanded(
             child: Text("Total de plata: ${dailyOrders.totalAmount} LEI",
                 style: TextStyle(fontSize: SizeConfig.blockSizeVertical *2.8), textAlign: TextAlign.end),

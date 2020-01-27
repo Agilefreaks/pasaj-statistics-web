@@ -4,6 +4,6 @@ import 'package:pasaj_statistics/statistics/monthlyStatisticsApiProvider.dart';
 class MonthlyStatisticsRepository {
   final monthlyStatisticsApiProvider = MonthlyStatisticsApiProvider();
 
-  Future<List<DailyOrders>> fetchAllOrdersPerMonth(DateTime selectedDate, int userId) =>
-      monthlyStatisticsApiProvider.fetchMonthlyOrder(selectedDate, userId);
+  Future<List<DailyOrders>> fetchAllOrdersPerMonth(DateTime selectedStartDate, DateTime selectedEndDate, int userId) =>
+      monthlyStatisticsApiProvider.fetchMonthlyOrder(selectedStartDate, selectedEndDate, userId);
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:pasaj_statistics/models/dailyOrders.dart';
 import 'package:pasaj_statistics/models/user.dart';
 import 'package:pasaj_statistics/statistics/dailyStatisticsWidget.dart';
-import 'package:pasaj_statistics/statistics/monthlyStatisticsApiProvider.dart';
 import 'package:pasaj_statistics/statistics/monthlyStatisticsRepository.dart';
 import 'package:pasaj_statistics/statistics/usersRepository.dart';
 import 'package:pasaj_statistics/utils/sizeConfig.dart';
@@ -21,7 +19,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   UsersRepository usersRepository = new UsersRepository();
 
   DateTime selectedEndDate = new DateTime.now();
-  DateTime selectedStartDate = new DateTime.now();
+  DateTime selectedStartDate = new DateTime(DateTime.now().year, DateTime.now().month, 1);
 
   final dayAndMonthFormat = DateFormat.MMMMd('ro');
 
@@ -61,7 +59,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
       showLoading = true;
     });
     monthlyStatisticsRepository
-        .fetchAllOrdersPerMonth(startDate, userId)
+        .fetchAllOrdersPerMonth(startDate, endDate, userId)
         .then((result) {
       setState(() {
         monthlyOrder = result;
@@ -144,11 +142,11 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                     showDatePicker(
                             context: context,
                             initialDate: selectedStartDate,
-                            firstDate: DateTime(2019),
+                            firstDate: DateTime(2020),
                             lastDate: DateTime(2030))
                         .then((date) {
                       if (date != null) {
-                        fetchMonthlyOrder(selectedStartDate, selectedEndDate,
+                        fetchMonthlyOrder(date, selectedEndDate,
                             selectedUser.id);
                         setState(() {
                           selectedStartDate = date;
@@ -177,11 +175,11 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                     showDatePicker(
                             context: context,
                             initialDate: selectedEndDate,
-                            firstDate: DateTime(2019),
+                            firstDate: DateTime(2020),
                             lastDate: DateTime(2030))
                         .then((date) {
                       if (date != null) {
-                        fetchMonthlyOrder(selectedStartDate, selectedEndDate,
+                        fetchMonthlyOrder(selectedStartDate, date,
                             selectedUser.id);
                         setState(() {
                           selectedEndDate = date;

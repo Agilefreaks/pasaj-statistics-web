@@ -8,13 +8,13 @@ class MonthlyStatisticsApiProvider {
   String apiUrl =
       "https://deliverypasaj.herokuapp.com/api/";
 
-  Future<List<DailyOrders>> fetchMonthlyOrder(DateTime selectedStartDate, DateTime selectedEndDate , int userId) async {
+  Future<List<DailyOrders>> fetchMonthlyOrder(DateTime selectedStartDate, DateTime selectedEndDate , String userId) async {
     final iso1086StartDate = DateFormat("yyyy-MM-dd").format(selectedStartDate);
     final iso1086EndDate = DateFormat("yyyy-MM-dd").format(selectedEndDate);
 
     String url = "${apiUrl}orders/monthlyCount?startDate=$iso1086StartDate&endDate=$iso1086EndDate";
 
-    if(userId  >= 0)  url += "&userID=$userId";
+    if(userId  != "agilefreaks")  url += "&userID=$userId";
 
     final response = await http.get(url);
 

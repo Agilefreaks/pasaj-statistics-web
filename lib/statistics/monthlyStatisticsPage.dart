@@ -27,7 +27,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
   double totalMonthlyAmount = 0;
 
   List<DailyOrders> monthlyOrder = [];
-  final agileFreaksUser = User(id: -1, firstName: "Agile", lastName: "Freaks");
+  final agileFreaksUser = User(id: "agilefreaks", firstName: "Agile", lastName: "Freaks");
   User selectedUser;
   List<User> users = [];
 
@@ -54,7 +54,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
     });
   }
 
-  fetchMonthlyOrder(DateTime startDate, DateTime endDate, int userId) {
+  fetchMonthlyOrder(DateTime startDate, DateTime endDate, String userId) {
     setState(() {
       showLoading = true;
     });
@@ -94,7 +94,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                 Padding(
                   padding: const EdgeInsets.only(right: 20.0),
                   child: Theme(
-                    data: ThemeData(canvasColor: Colors.green),
+                    data: ThemeData(canvasColor: Colors.blue),
                     child: DropdownButton<User>(
                       underline: Container(
                         height: 0,
@@ -137,7 +137,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: 20),
                   ),
-                  color: Colors.green,
+                  color: Colors.blue,
                   onPressed: () async {
                     showDatePicker(
                             context: context,
@@ -170,7 +170,7 @@ class _MonthlyStatisticsPageState extends State<MonthlyStatisticsPage> {
                         fontWeight: FontWeight.bold,
                         fontSize: 20),
                   ),
-                  color: Colors.green,
+                  color: Colors.blue,
                   onPressed: () async {
                     showDatePicker(
                             context: context,
